@@ -34,7 +34,6 @@ for message in st.session_state.messages:
 
 # Input
 if prompt := st.chat_input("Tell me what is on your chest!"):
-    # save + display user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -51,17 +50,7 @@ if prompt := st.chat_input("Tell me what is on your chest!"):
             messages=api_messages,
             stream=True,
         )
-
-        # Stream chunks into Streamlit
-        def stream_text():
-            for chunk in stream:
-                delta = chunk.choices[0].delta
-                if delta and getattr(delta, "content", None):
-                    yield delta.content
-
-        response = st.write_stream(stream_text())
-
-    # Save assistant final text to history
+        response = st.write_stream(stream)
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 
