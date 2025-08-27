@@ -1,4 +1,2 @@
 streamlit
 openai
-langchain
-sqlite3
