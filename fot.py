@@ -7,10 +7,12 @@ from datetime import datetime
 import streamlit as st
 from openai import OpenAI
 
+# ---- Config ----
 st.set_page_config(page_title="AI Psychologist", page_icon="🧠")
 st.title("🧠 AI Psychologist")
 st.caption("Local username login • JSON persistence • Secrets for API key")
 
+# ---- Secrets / API key ----
 try:
     OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 except Exception:
@@ -38,7 +40,8 @@ def upsert_user(name: str) -> str:
     if user_id not in db["users"]:
         db["users"][user_id] = {
             "display_name": name.strip(),
-            "created_at": datetime.utcnow().isoformat(),}
+            "created_at": datetime.utcnow().isoformat(),
+        }
         db["messages"][user_id] = []
         save_db(db)
     return user_id
@@ -79,13 +82,15 @@ with st.sidebar:
             st.session_state.loaded_history = False
             st.success(f"Signed in as {name}")
             st.rerun()
+
     st.divider()
     st.subheader("Session")
     if st.button("Sign out"):
         st.session_state.auth_user_id = None
         st.session_state.messages = []
         st.session_state.loaded_history = False
-        st.experimental_rerun()
+        st.rerun()
+
     if st.button("Clear my saved history"):
         if st.session_state.auth_user_id:
             db = load_db()
@@ -127,12 +132,23 @@ if prompt:
     save_message(st.session_state.auth_user_id, "user", prompt)
     with st.chat_message("user"):
         st.markdown(prompt)
+
     # build API messages: system + history
-    api_messages = [SYSTEM_PROMPT] + [{"role": m["role"], "content": m["content"]} for m in st.session_state.messages if m["role"] in ("user", "assistant")]
+    api_messages = [SYSTEM_PROMPT] + [
+        {"role": m["role"], "content": m["content"]}
+        for m in st.session_state.messages
+        if m["role"] in ("user", "assistant")
+    ]
+
     # get/stream assistant reply
     with st.chat_message("assistant"):
-        stream = client.chat.completions.create(model=st.session_state["openai_model"],messages=api_messages,stream=True)
+        stream = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=api_messages,
+            stream=True,
+        )
         reply = st.write_stream(stream)
+
     # persist assistant reply
     st.session_state.messages.append({"role": "assistant", "content": reply, "ts": datetime.utcnow().isoformat()})
     save_message(st.session_state.auth_user_id, "assistant", reply)
