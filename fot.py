@@ -125,30 +125,24 @@ for m in st.session_state.messages:
         st.markdown(m["content"])
 
 # ---- Chat input ----
-prompt = st.chat_input("Tell me what's on your chest!")
+placeholder_text = "Tell me what's on your chest!"
+if st.session_state.auth_user_id:
+    user_display = st.session_state.auth_user_id.split(":", 1)[-1].capitalize()
+    placeholder_text = f"{user_display}, what's on your chest?"
+
+
+prompt = st.chat_input(placeholder_text)
 if prompt:
-    # save/display user message
     st.session_state.messages.append({"role": "user", "content": prompt, "ts": datetime.utcnow().isoformat()})
     save_message(st.session_state.auth_user_id, "user", prompt)
     with st.chat_message("user"):
         st.markdown(prompt)
-
     # build API messages: system + history
-    api_messages = [SYSTEM_PROMPT] + [
-        {"role": m["role"], "content": m["content"]}
-        for m in st.session_state.messages
-        if m["role"] in ("user", "assistant")
-    ]
-
+    api_messages = [SYSTEM_PROMPT] + [ {"role": m["role"], "content": m["content"]} for m in st.session_state.messages if m["role"] in ("user", "assistant") ]
     # get/stream assistant reply
     with st.chat_message("assistant"):
-        stream = client.chat.completions.create(
-            model=st.session_state["openai_model"],
-            messages=api_messages,
-            stream=True,
-        )
+        stream = client.chat.completions.create( model=st.session_state["openai_model"], messages=api_messages, stream=True, )
         reply = st.write_stream(stream)
-
     # persist assistant reply
     st.session_state.messages.append({"role": "assistant", "content": reply, "ts": datetime.utcnow().isoformat()})
     save_message(st.session_state.auth_user_id, "assistant", reply)
