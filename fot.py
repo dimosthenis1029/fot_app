@@ -38,10 +38,7 @@ def upsert_user(name: str) -> str:
     user_id = f"local:{name.strip().lower()}"
     db = load_db()
     if user_id not in db["users"]:
-        db["users"][user_id] = {
-            "display_name": name.strip(),
-            "created_at": datetime.utcnow().isoformat(),
-        }
+        db["users"][user_id] = {"display_name": name.strip(),"created_at": datetime.utcnow().isoformat()}
         db["messages"][user_id] = []
         save_db(db)
     return user_id
@@ -52,11 +49,7 @@ def load_messages(user_id: str) -> list[dict]:
 
 def save_message(user_id: str, role: str, content: str) -> None:
     db = load_db()
-    db["messages"].setdefault(user_id, []).append({
-        "role": role,
-        "content": content,
-        "ts": datetime.utcnow().isoformat()
-    })
+    db["messages"].setdefault(user_id, []).append({"role": role,"content": content,"ts": datetime.utcnow().isoformat()})
     save_db(db)
 
 # ---- Session state ----
@@ -82,7 +75,6 @@ with st.sidebar:
             st.session_state.loaded_history = False
             st.success(f"Signed in as {name}")
             st.rerun()
-
     st.divider()
     st.subheader("Session")
     if st.button("Sign out"):
@@ -90,7 +82,6 @@ with st.sidebar:
         st.session_state.messages = []
         st.session_state.loaded_history = False
         st.rerun()
-
     if st.button("Clear my saved history"):
         if st.session_state.auth_user_id:
             db = load_db()
@@ -112,12 +103,10 @@ if not st.session_state.loaded_history:
 # ---- System prompt (not stored) ----
 SYSTEM_PROMPT = {
     "role": "system",
-    "content": (
-        "You are an empathetic psychologist. Respond with warmth, validation, and gentle, practical guidance. "
+    "content": ( "You are an empathetic psychologist. Respond with warmth, validation, and gentle, practical guidance. "
         "Be concise, avoid medical diagnoses, suggest reflective questions, and encourage healthy coping strategies. "
-        "Feel free to mention well-known ideas from psychology to validate the user. Use what they share about themselves."
-    ),
-}
+        "Feel free to mention well-known ideas from psychology to validate the user. Use what they share about themselves. "
+        "Also in the end of the answer give references of psychology books/literature where you based your advice on." ),}
 
 # ---- Render prior messages ----
 for m in st.session_state.messages:
@@ -149,3 +138,5 @@ if prompt:
 
 # ---- Footer ----
 st.caption(f"DB file: {DB_PATH}")
+
+
