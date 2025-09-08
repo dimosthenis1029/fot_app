@@ -124,7 +124,7 @@ if prompt:
     # build API messages: system + history
     api_messages = [SYSTEM_PROMPT] + [ {"role": m["role"], "content": m["content"]} for m in st.session_state.messages if m["role"] in ("user", "assistant") ]
     # get/stream assistant reply
-    with st.chat_message("assistant", avatar="Roe.png"):
+    with st.chat_message("assistant", avatar="Roechat.png"):
         stream = client.chat.completions.create( model=st.session_state["openai_model"], messages=api_messages, stream=True, )
         reply = st.write_stream(stream)
     # persist assistant reply
