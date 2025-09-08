@@ -7,9 +7,8 @@ import streamlit as st
 from openai import OpenAI
 
 # ---- Config ----
-st.set_page_config(page_title="AI Psychologist", page_icon="Roe.png")
+st.set_page_config(page_title="ROE", page_icon="Roe.png")
 st.image("Roe.png", width=120)
-st.title("ROE")
 st.caption("AI Psychologist")
 
 # ---- Secrets / API key ----
