@@ -8,8 +8,7 @@ from openai import OpenAI
 
 # ---- Config ----
 st.set_page_config(page_title="ROE", page_icon="Roe.png")
-st.image("Roe.png", width=120)
-st.caption("AI Psychologist")
+st.image("Roe.png", width=240)
 
 # ---- Secrets / API key ----
 try:
@@ -63,7 +62,7 @@ if "loaded_history" not in st.session_state:
 
 # ---- Sidebar: login + controls ----
 with st.sidebar:
-    st.header("Sign in")
+    st.header("Sign in to ROE")
     name = st.text_input("Your name", placeholder="e.g., Alex")
     if st.button("Continue"):
         if not name.strip():
@@ -75,19 +74,19 @@ with st.sidebar:
             st.success(f"Signed in as {name}")
             st.rerun()
     st.divider()
-    st.subheader("Session")
+    st.subheader("ROE Session")
     if st.button("Sign out"):
         st.session_state.auth_user_id = None
         st.session_state.messages = []
         st.session_state.loaded_history = False
         st.rerun()
-    if st.button("Clear my saved history"):
+    if st.button("Clear my history"):
         if st.session_state.auth_user_id:
             db = load_db()
             db["messages"][st.session_state.auth_user_id] = []
             save_db(db)
             st.session_state.messages = []
-            st.success("Deleted your saved chat history.")
+            st.success("Deleted chat history.")
             st.rerun()
 
 # ---- Require login ----
@@ -102,10 +101,7 @@ if not st.session_state.loaded_history:
 # ---- System prompt (not stored) ----
 SYSTEM_PROMPT = {
     "role": "system",
-    "content": ( "You are an empathetic psychologist. Respond with warmth, validation, and gentle, practical guidance. "
-        "Be concise, avoid medical diagnoses, suggest reflective questions, and encourage healthy coping strategies. "
-        "Feel free to mention well-known ideas from psychology to validate the user. Use what they share about themselves. "
-        "Also in the end of the answer give references of psychology books/literature where you based your advice on." ),}
+    "content": ( "You are a psychologist who helps users sharing their problems with you and expecting advice that will improve their life. When answering please consider only the following famous psychologists and psychoanalysts: Wilhelm Wundt, William James, Sigmund Freud, Ivan Pavlov, John B. Watson, B. F. Skinner, Jean Piaget, Carl Rogers, Albert Bandura, Aaron Beck, Carl Jung, Alfred Adler, Erik Erikson, Lev Vygotsky and Abraham Maslow. Only use their schools of thought and advice as a foundation for your answer. No one else. Also leverage the information users share about themselves for a more educated answer. Also in the end of the answer give book references where you based your advice on." ),}
 
 # ---- Render prior messages ----
 for m in st.session_state.messages:
@@ -113,10 +109,10 @@ for m in st.session_state.messages:
         st.markdown(m["content"])
 
 # ---- Chat input ----
-placeholder_text = "Tell me what's on your chest!"
+placeholder_text = "Please share your thoughts!"
 if st.session_state.auth_user_id:
     user_display = st.session_state.auth_user_id.split(":", 1)[-1].capitalize()
-    placeholder_text = f"{user_display}, what's on your chest?"
+    placeholder_text = f"{user_display}, please share your thoughts!"
 
 
 prompt = st.chat_input(placeholder_text)
