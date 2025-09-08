@@ -131,7 +131,4 @@ if prompt:
     st.session_state.messages.append({"role": "assistant", "content": reply, "ts": datetime.utcnow().isoformat()})
     save_message(st.session_state.auth_user_id, "assistant", reply)
 
-# ---- Footer ----
-st.caption(f"DB file: {DB_PATH}")
-
 
