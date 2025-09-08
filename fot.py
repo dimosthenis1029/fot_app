@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 import os
 import json
@@ -8,9 +7,10 @@ import streamlit as st
 from openai import OpenAI
 
 # ---- Config ----
-st.set_page_config(page_title="AI Psychologist", page_icon="🧠")
-st.title("🧠 AI Psychologist")
-st.caption("Local username login • JSON persistence • Secrets for API key")
+st.set_page_config(page_title="AI Psychologist", page_icon="Roe.png")
+st.image("Roe.png", width=120)
+st.title("ROE")
+st.caption("AI Psychologist")
 
 # ---- Secrets / API key ----
 try:
