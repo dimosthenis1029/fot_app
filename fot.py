@@ -8,7 +8,7 @@ from openai import OpenAI
 
 # ---- Config ----
 st.set_page_config(page_title="ROE", page_icon="Roe.png")
-st.image("Roe.png", width=280)
+st.image("Roe.png", width=240)
 
 # ---- Secrets / API key ----
 try:
@@ -119,12 +119,12 @@ prompt = st.chat_input(placeholder_text)
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt, "ts": datetime.utcnow().isoformat()})
     save_message(st.session_state.auth_user_id, "user", prompt)
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="🧍"):
         st.markdown(prompt)
     # build API messages: system + history
     api_messages = [SYSTEM_PROMPT] + [ {"role": m["role"], "content": m["content"]} for m in st.session_state.messages if m["role"] in ("user", "assistant") ]
     # get/stream assistant reply
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="Roe.png"):
         stream = client.chat.completions.create( model=st.session_state["openai_model"], messages=api_messages, stream=True, )
         reply = st.write_stream(stream)
     # persist assistant reply
